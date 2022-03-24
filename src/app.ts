@@ -1,10 +1,8 @@
-
-/**
- * Intersection Types
- */
-type Admin = {
+// ## 1 Intersection Types (un common )
+// Intercection types allows us to combine other types
+type Admin =  {
   name: string;
-  privileges: string[];
+  roles: string[];
 };
 
 type Employee = {
@@ -13,93 +11,68 @@ type Employee = {
 };
 
 type ElevatedEmployee = Admin & Employee;
+// interface ElevatedEmployee extends Admin, Employee {}
+// Concept that is very close on interface
 
 const e1: ElevatedEmployee = {
-  name: 'Max',
-  privileges: ['create-server'],
-  startDate: new Date()
-};
+  name: 'Joe',
+  roles: ['create-server'],
+  startDate: new Date(),
+}
 
-/**
- * type guards
- */
+console.log(e1)
+
+// Intersection types can be used in conjuction with any types including union types
 type Combinable = string | number;
 type Numeric = number | boolean;
-
+// In this case the intersection type is number
 type Universal = Combinable & Numeric;
 
-
-/**
- * Function overload and type guards
- */
-function add(a: number, b: number): number;
-function add(a: string, b: string): string;
-function add(a: string, b: number): string;
-function add(a: number, b: string): string;
+// ## 2 Type Guards (more common)
+// They Help with Union Types
+// Type guards using typeof
 function add(a: Combinable, b: Combinable) {
-  if (typeof a === 'string' || typeof b === 'string') {
+  // return a + b; // Wrong, needs type guards
+  if (typeof a === 'string' || typeof b === 'string') { // Type guard
     return a.toString() + b.toString();
   }
+
   return a + b;
 }
 
-const result = add('Max', ' Schwarz');
-result.split(' ');
+const result = add(5, '5');
 
-const fetchedUserData = {
-  id: 'u1',
-  name: 'Max',
-  job: { title: 'CEO', description: 'My own company' }
-};
-
-/**
- * Optional chained properties
- */
-console.log(fetchedUserData?.job?.title);
-
-const userInput = undefined;
-
-/**
- * Nulling coalescing operator
- */
-const storedData = userInput ?? 'DEFAULT';
-
-console.log(storedData);
-
-
-/**
- * More on Type Guards using `in`
- */
+// Type guards using "in" keyword
 type UnknownEmployee = Employee | Admin;
 
 function printEmployeeInformation(emp: UnknownEmployee) {
-  console.log('Name: ' + emp.name);
-  if ('privileges' in emp) {
-    console.log('Privileges: ' + emp.privileges);
+  console.log('name: ' + emp.name);
+  // console.log('roles: ' + emp.roles); // Wrong, needs type guards
+  // console.log('startDate: ' + emp.startDate); // Wrong, needs type guards
+  if ('roles' in emp) { // The Typ Guard for roles
+    console.log('roles: ' + emp.roles);
   }
-  if ('startDate' in emp) {
-    console.log('Start Date: ' + emp.startDate);
+  if ('startDate' in emp) {	// The Typ Guard for startDate
+    console.log('startDate: ' + emp.startDate);
   }
 }
 
-printEmployeeInformation({ name: 'Manu', startDate: new Date() });
+printEmployeeInformation(e1);
 
-/**
- * More on Type Guards using `instanceof`
- */
+// Type guards using "instace of" keyword
 class Car {
   drive() {
-    console.log('Driving...');
+    console.log('driving...');
   }
 }
 
 class Truck {
   drive() {
-    console.log('Driving a truck...');
+    console.log('driving a truck...');
   }
 
   loadCargo(amount: number) {
-    console.log('Loading cargo ...' + amount);
+    console.log('Loading cargo... ' + amount);
   }
 }
 
@@ -108,63 +81,80 @@ type Vehicle = Car | Truck;
 const v1 = new Car();
 const v2 = new Truck();
 
-function useVehicle(vehicle: Vehicle) {
-  vehicle.drive();
-  if (vehicle instanceof Truck) {
-    vehicle.loadCargo(1000);
+function useVehicle(v: Vehicle) {
+  v.drive();
+  if (v instanceof Truck) {
+    v.loadCargo(5); // wrong, needs type guards
   }
 }
 
-useVehicle(v1);
 useVehicle(v2);
 
-/**
- * Discriminated Unions
- */
+// ## 3 Discriminated Unions
+// Is Pattern that can be use when working with union type, that makes
+// type guard easier, is available when working with object types
 interface Bird {
-  type: 'bird';
-  flyingSpeed: number;
+  type: 'bird' // Discriminator, not a value
+  flyingSpeed: number
 }
 
 interface Horse {
-  type: 'horse';
-  runningSpeed: number;
+  type: 'horse' // Discriminator, not a value
+  runningSpeed: number
 }
 
-type Animal = Bird | Horse;
+type Animal = Bird | Horse; // Discriminated union, with a common property that describe that object
 
 function moveAnimal(animal: Animal) {
+  // console.log('Moving with spedd: ' + animal.flyingSpeed); // Wrong, Needs a type guard, or discriminated union
   let speed;
   switch (animal.type) {
     case 'bird':
-      speed = animal.flyingSpeed;
+      speed = 'Moving with speed: ' + animal.flyingSpeed;
       break;
-    case 'horse':
-      speed = animal.runningSpeed;
+    case 'horse':	
+      speed = 'Moving with speed: ' + animal.runningSpeed;
   }
-  console.log('Moving at speed: ' + speed);
+  console.log(speed);
 }
 
-moveAnimal({type: 'bird', flyingSpeed: 10});
+moveAnimal({ type: 'bird', flyingSpeed: 10})
 
-/**
- * type casting
- */
-// const userInputElement = <HTMLInputElement>document.getElementById('user-input')!;
-const userInputElement = document.getElementById('user-input');
+// ## 4 Type Casting
+// const paragraph = document.querySelector('p'); // typscript knows we want to select a P
+// That changes when selecting by ID
+// const paragraph = document.getElementById('message id'); // typscript only knows that is a HTML Element
+// const userInput = <HTMLInputElement> document.getElementById('user-input');
+// The "!" tells typscript that the expresion in front will never yield null
+const userInput = document.getElementById('user-input') as HTMLInputElement;
 
-if (userInputElement) {
-  (userInputElement as HTMLInputElement).value = 'Hi there!';
+userInput.value = 'Hi there!'; // Won't work, without type casting
+
+// ## 5 Index Properties
+// Allows us to create object which are more flexible regarding the properties they might hold
+// No need to know in advance which property
+interface ErrorContainer {
+  [prop: string]: string // Telling Typscript that an object based on ErrorContainer container must have a key that is a string, with a string value
+  // id: string
 }
 
-/**
- * Index properties
- */
-interface ErrorContainer { // { email: 'Not a valid email', username: 'Must start with a character!' }
-  [prop: string]: string;
+const error: ErrorContainer = {
+  email: 'Wrong Email',
+  userName: 'Must start with a capital letter'
 }
 
-const errorBag: ErrorContainer = {
-  email: 'Not a valid email!',
-  username: 'Must start with a capital character!'
-};
+// ## 6 Function overloads
+// Allows us to have multiple functions with the same name, but different call signatures
+
+function parseDate(timestamp: number): Date;
+function parseDate(m: number, d: number, y: number): Date;
+function parseDate(m: number, d?: number, y?: number): Date {
+  if (d !== undefined && y !== undefined) {
+    return new Date(y, m, d);
+  }
+
+  return new Date(m);
+}
+
+const date = parseDate(12345678);
+const date2 = parseDate(1, 1, 1);

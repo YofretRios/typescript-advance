@@ -1,10 +1,10 @@
 // ## Generic Basic, they give flexibity for type safety
-const names: Array<string> = ['1', 'Max'];
+const names: Array<string> = ['1', '2'];
 // names[0].split(' '); 
 
 // ## Generic Example using promises
 // We are telling typescript that the promise will return a string
-const promise: Promise<string> = new Promise((resolve, reject) => {
+const promise: Promise<string> = new Promise((resolve) => {
   setTimeout(() => {
     resolve('test');
   }, 2000);
@@ -74,7 +74,7 @@ function createPost(title: string, description: string, date: Date): Post {
 
 // Locking down our food constant
 const foods: Readonly<string[]> = ['banana', 'apple', 'orange'];
-foods.push('grape');
+// foods.push('grape');
 
 
 // https://www.typescriptlang.org/docs/handbook/2/generics.html

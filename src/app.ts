@@ -122,7 +122,7 @@ function moveAnimal(animal: Animal) {
 moveAnimal({ type: 'bird', flyingSpeed: 10})
 
 // ## 4 Type Casting
-// Helps us tell typescript the an specific value is of a specific type where typescript is not able detect it 
+// Helps us tell typescript that an specific value is of an specific type where typescript is not able detect it 
 // on its own
 // const paragraph = document.querySelector('p'); // typscript knows we want to select a P
 // That changes when selecting by ID

@@ -1,4 +1,4 @@
-// ## 1 Intersection Types (un common )
+// ## 1 Intersection Types (un common)
 // Intercection types allows us to combine other types
 type Admin =  {
   name: string;
@@ -29,7 +29,8 @@ type Numeric = number | boolean;
 type Universal = Combinable & Numeric;
 
 // ## 2 Type Guards (more common)
-// They Help with Union Types
+// They Help with Union Types, and Intersection Types
+// While having the flexibility of both of them, often we need to know which exact are we getting at runtime
 // Type guards using typeof
 function add(a: Combinable, b: Combinable) {
   // return a + b; // Wrong, needs type guards
@@ -121,6 +122,8 @@ function moveAnimal(animal: Animal) {
 moveAnimal({ type: 'bird', flyingSpeed: 10})
 
 // ## 4 Type Casting
+// Helps us tell typescript the an specific value is of a specific type where typescript is not able detect it 
+// on its own
 // const paragraph = document.querySelector('p'); // typscript knows we want to select a P
 // That changes when selecting by ID
 // const paragraph = document.getElementById('message id'); // typscript only knows that is a HTML Element
